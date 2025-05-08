@@ -73,8 +73,12 @@
   <!-- Navbar -->
   <nav class="gradient-bg text-white p-4 sticky">
     <div class="container mx-auto flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold flex items-center">
-        <img src="/assets/logo.png" class="h-8 mr-2" alt="Logo" onerror="this.style.display='none'"> Jobs.SchoolHunt.in
+      <a href="/" class="text-2xl font-bold flex items-center flex-col">
+        <img src="/assets/logo.png" class="h-12" alt="Logo" onerror="this.style.display='none'">
+        <span data-lang="en">Jobs.SchoolHunt.in</span>
+        <span data-lang="hi" style="display:none;">जॉब्स.स्कूलहंट.इन</span>
+        <small class="text-sm" data-lang="en">From Education to Employment, in One Click!</small>
+        <small class="text-sm" data-lang="hi" style="display:none;">शिक्षा से रोजगार तक, एक क्लिक में!</small>
       </a>
       <div>
         <a href="#jobs" class="mx-2" data-lang="en">Jobs</a>
@@ -95,7 +99,8 @@
 
   <!-- Search Bar -->
   <div id="search-bar" class="container mx-auto">
-    <input type="text" id="search-input" placeholder="Search jobs, admit cards, results..." class="input-field">
+    <input type="text" id="search-input" placeholder="Search jobs, admit cards, results..." data-lang="en">
+    <input type="text" id="search-input" placeholder="जॉब्स, एडमिट कार्ड, रिजल्ट्स खोजें..." data-lang="hi" style="display:none;">
     <div id="search-results"></div>
   </div>
 
@@ -157,7 +162,7 @@
           <div class="mb-4">
             <h3 class="text-lg font-bold">{{ result.title }}</h3>
             <p class="text-gray-600" data-lang="en">Posted: {{ result.date | date: "%b %d, %Y" }}</p>
-            <p class="text-gray-600" data-lang="hi" style="display:none;">पोस्ट किया गया: {{ card.date | date: "%d %b, %Y" }}</p>
+            <p class="text-gray-600" data-lang="hi" style="display:none;">पोस्ट किया गया: {{ result.date | date: "%d %b, %Y" }}</p>
             <a href="{{ result.permalink }}" class="text-blue-500" data-lang="en">Details</a>
             <a href="{{ result.permalink }}" class="text-blue-500" data-lang="hi" style="display:none;">विवरण</a>
             <a href="{{ result.resultLink }}" class="text-green-500 ml-2" data-lang="en">Check Result</a>
@@ -173,10 +178,10 @@
       <h2 class="text-2xl font-bold mb-2" data-lang="en">Useful Links</h2>
       <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">उपयोगी लिंक्स</h2>
       <ul class="list-disc pl-4">
-        <li><a href="https://serviceonline.bihar.gov.in" class="text-blue-500">Service Plus Bihar</a></li>
-        <li><a href="https://uidai.gov.in" class="text-blue-500">Aadhaar Sarthi</a></li>
-        <li><a href="https://www.incometaxindia.gov.in" class="text-blue-500">Income Tax</a></li>
-        <!-- Add more links here -->
+        <li><a href="https://serviceonline.bihar.gov.in" class="text-blue-500" target="_blank" rel="noopener">Service Plus Bihar</a></li>
+        <li><a href="https://uidai.gov.in" class="text-blue-500" target="_blank" rel="noopener">Aadhaar Sarthi</a></li>
+        <li><a href="https://www.incometaxindia.gov.in" class="text-blue-500" target="_blank" rel="noopener">Income Tax</a></li>
+        <!-- Add more links as needed -->
       </ul>
     </aside>
   </div>
@@ -191,9 +196,9 @@
         <h3 class="text-lg font-bold" data-lang="en">Image Resizer</h3>
         <h3 class="text-lg font-bold" data-lang="hi" style="display:none;">इमेज रिसाइज़र</h3>
         <input type="file" id="image-upload" accept="image/*">
-        <input type="range" id="image-size" min="10" max="1000" value="500" class="w-full">
-        <p data-lang="en">Size: <span id="image-size-value">500px</span></p>
-        <p data-lang="hi" style="display:none;">साइज़: <span id="image-size-value">500px</span></p>
+        <input type="range" id="image-quality" min="10" max="100" value="80" class="w-full">
+        <p data-lang="en">Quality: <span id="image-quality-value">80%</span> (<span id="image-size-kb">0 KB</span>)</p>
+        <p data-lang="hi" style="display:none;">क्वालिटी: <span id="image-quality-value">80%</span> (<span id="image-size-kb">0 KB</span>)</p>
         <img id="image-preview" class="preview-img" style="display:none;">
         <button id="resize-image" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="en">Resize</button>
         <button id="resize-image" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="hi" style="display:none;">रिसाइज़ करें</button>
@@ -204,9 +209,9 @@
         <h3 class="text-lg font-bold" data-lang="en">PDF Resizer</h3>
         <h3 class="text-lg font-bold" data-lang="hi" style="display:none;">पीडीएफ रिसाइज़र</h3>
         <input type="file" id="pdf-upload" accept=".pdf">
-        <input type="range" id="pdf-size" min="10" max="100" value="80" class="w-full">
-        <p data-lang="en">Quality: <span id="pdf-size-value">80%</span></p>
-        <p data-lang="hi" style="display:none;">क्वालिटी: <span id="pdf-size-value">80%</span></p>
+        <input type="range" id="pdf-quality" min="10" max="100" value="80" class="w-full">
+        <p data-lang="en">Quality: <span id="pdf-quality-value">80%</span> (<span id="pdf-size-kb">0 KB</span>)</p>
+        <p data-lang="hi" style="display:none;">क्वालिटी: <span id="pdf-quality-value">80%</span> (<span id="pdf-size-kb">0 KB</span>)</p>
         <canvas id="pdf-preview" class="preview-pdf" style="display:none;"></canvas>
         <button id="resize-pdf" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="en">Resize</button>
         <button id="resize-pdf" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="hi" style="display:none;">रिसाइज़ करें</button>
@@ -265,8 +270,8 @@
     });
 
     // Image Resizer
-    document.getElementById('image-size').addEventListener('input', (e) => {
-      document.getElementById('image-size-value').textContent = `${e.target.value}px`;
+    document.getElementById('image-quality').addEventListener('input', (e) => {
+      document.getElementById('image-quality-value').textContent = `${e.target.value}%`;
     });
     document.getElementById('image-upload').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -276,26 +281,31 @@
           const preview = document.getElementById('image-preview');
           preview.src = e.target.result;
           preview.style.display = 'block';
+          document.getElementById('image-size-kb').textContent = `${(file.size / 1024).toFixed(2)} KB`;
         };
         reader.readAsDataURL(file);
       }
     });
     document.getElementById('resize-image').addEventListener('click', () => {
       const file = document.getElementById('image-upload').files[0];
-      const size = document.getElementById('image-size').value;
+      const quality = document.getElementById('image-quality').value / 100;
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = (img.height / img.width) * size;
+            canvas.width = img.width;
+            canvas.height = img.height;
             canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
             const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/jpeg');
+            link.href = dataUrl;
             link.download = 'resized-image.jpg';
             link.click();
+            // Estimate size in KB
+            const kbSize = (dataUrl.length * 0.75 / 1024).toFixed(2);
+            document.getElementById('image-size-kb').textContent = `${kbSize} KB`;
           };
           img.src = e.target.result;
         };
@@ -304,8 +314,8 @@
     });
 
     // PDF Resizer
-    document.getElementById('pdf-size').addEventListener('input', (e) => {
-      document.getElementById('pdf-size-value').textContent = `${e.target.value}%`;
+    document.getElementById('pdf-quality').addEventListener('input', (e) => {
+      document.getElementById('pdf-quality-value').textContent = `${e.target.value}%`;
     });
     document.getElementById('pdf-upload').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -323,6 +333,7 @@
           canvas.width = viewport.width;
           await page.render({ canvasContext: context, viewport }).promise;
           canvas.style.display = 'block';
+          document.getElementById('pdf-size-kb').textContent = `${(file.size / 1024).toFixed(2)} KB`;
         };
         reader.readAsArrayBuffer(file);
       }
