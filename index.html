@@ -181,7 +181,6 @@
         <li><a href="https://serviceonline.bihar.gov.in" class="text-blue-500" target="_blank" rel="noopener">Service Plus Bihar</a></li>
         <li><a href="https://uidai.gov.in" class="text-blue-500" target="_blank" rel="noopener">Aadhaar Sarthi</a></li>
         <li><a href="https://www.incometaxindia.gov.in" class="text-blue-500" target="_blank" rel="noopener">Income Tax</a></li>
-        <!-- Add more links as needed -->
       </ul>
     </aside>
   </div>
@@ -259,8 +258,20 @@
   </footer>
 
   <!-- JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/algolia-docsearch@3/dist/docsearch.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/algolia-docsearch@3/dist/docsearch.min.js" onload="initDocSearch()"></script>
   <script>
+    function initDocSearch() {
+      if (typeof docsearch === 'function') {
+        docsearch({
+          apiKey: 'YOUR_ALGOLIA_API_KEY',
+          indexName: 'YOUR_ALGOLIA_INDEX_NAME',
+          inputSelector: '#search-input'
+        });
+      } else {
+        console.warn('Algolia DocSearch not loaded. Please check the script URL or provide valid credentials.');
+      }
+    }
+
     // Language Toggle
     document.getElementById('lang-toggle').addEventListener('change', (e) => {
       const lang = e.target.value;
@@ -303,7 +314,6 @@
             link.href = dataUrl;
             link.download = 'resized-image.jpg';
             link.click();
-            // Estimate size in KB
             const kbSize = (dataUrl.length * 0.75 / 1024).toFixed(2);
             document.getElementById('image-size-kb').textContent = `${kbSize} KB`;
           };
@@ -352,13 +362,6 @@
       }
       document.querySelector('#age-result[data-lang="en"]').textContent = `Your age is ${age} years.`;
       document.querySelector('#age-result[data-lang="hi"]').textContent = `आपकी आयु ${age} वर्ष है।`;
-    });
-
-    // Algolia DocSearch
-    docsearch({
-      apiKey: 'YOUR_ALGOLIA_API_KEY',
-      indexName: 'YOUR_ALGOLIA_INDEX_NAME',
-      inputSelector: '#search-input'
     });
   </script>
 </body>
