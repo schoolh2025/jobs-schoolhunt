@@ -45,24 +45,46 @@
   <title>Jobs.SchoolHunt.in</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/algolia-docsearch@3/dist/docsearch.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <style>
+    body { font-family: 'Noto Sans Devanagari', sans-serif; }
     .gradient-bg { background: linear-gradient(45deg, #007BFF, #FF6200); }
     .blink { animation: blink 1s infinite; }
     @keyframes blink { 50% { opacity: 0; } }
+    #search-bar { margin: 1rem; }
+    #search-input { padding: 0.5rem; width: 100%; border-radius: 0.375rem; }
+    #search-results { background: #f8f9fa; padding: 0.5rem; }
+    #newsletter { background: linear-gradient(45deg, #007BFF, #FF6200); padding: 1rem; color: white; border-radius: 0.375rem; margin: 1rem; }
+    #newsletter input { padding: 0.5rem; width: 70%; border-radius: 0.375rem; margin-right: 0.5rem; }
+    #newsletter button { background: #fff; color: #007BFF; padding: 0.5rem 1rem; border-radius: 0.375rem; }
+    .sticky { position: sticky; top: 0; z-index: 10; }
+    .sidebar { position: sticky; top: 4rem; }
+    .preview-img, .preview-pdf { max-width: 100%; height: auto; margin-top: 0.5rem; }
+    @media (max-width: 640px) {
+      #main-content { flex-direction: column; }
+      .sidebar { position: static; }
+      #newsletter input, #newsletter button { width: 100%; margin: 0.25rem 0; }
+    }
   </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100">
   <!-- Navbar -->
-  <nav class="gradient-bg text-white p-4 sticky top-0">
+  <nav class="gradient-bg text-white p-4 sticky">
     <div class="container mx-auto flex justify-between items-center">
       <a href="/" class="text-2xl font-bold flex items-center">
         <img src="/assets/logo.png" class="h-8 mr-2" alt="Logo" onerror="this.style.display='none'"> Jobs.SchoolHunt.in
       </a>
       <div>
-        <a href="#jobs" class="mx-2">Jobs</a>
-        <a href="#admit-cards" class="mx-2">Admit Cards</a>
-        <a href="#results" class="mx-2">Results</a>
-        <a href="#tools" class="mx-2">Tools</a>
+        <a href="#jobs" class="mx-2" data-lang="en">Jobs</a>
+        <a href="#jobs" class="mx-2" data-lang="hi" style="display:none;">जॉब्स</a>
+        <a href="#admit-cards" class="mx-2" data-lang="en">Admit Cards</a>
+        <a href="#admit-cards" class="mx-2" data-lang="hi" style="display:none;">एडमिट कार्ड</a>
+        <a href="#results" class="mx-2" data-lang="en">Results</a>
+        <a href="#results" class="mx-2" data-lang="hi" style="display:none;">रिजल्ट्स</a>
+        <a href="#tools" class="mx-2" data-lang="en">Tools</a>
+        <a href="#tools" class="mx-2" data-lang="hi" style="display:none;">टूल्स</a>
         <select id="lang-toggle" class="bg-transparent">
           <option value="en">English</option>
           <option value="hi">हिंदी</option>
@@ -71,92 +93,159 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="gradient-bg text-white text-center py-16">
-    <h1 class="text-4xl font-bold">Latest Government Jobs 2025</h1>
-    <p class="mt-4 text-lg">Find Jobs, Admit Cards, Results, and Tools in Hindi & English</p>
-  </section>
+  <!-- Search Bar -->
+  <div id="search-bar" class="container mx-auto">
+    <input type="text" id="search-input" placeholder="Search jobs, admit cards, results..." class="input-field">
+    <div id="search-results"></div>
+  </div>
 
-  <!-- Jobs Section -->
-  <section id="jobs" class="container mx-auto py-8">
-    <h2 class="text-3xl font-bold mb-4">Latest Jobs</h2>
-    <div id="jobs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {% for job in site.jobs %}
-      <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">{{ job.title }}</h3>
-        <p class="text-gray-600">Posted: {{ job.date | date: "%b %d, %Y" }}</p>
-        <p class="text-gray-600">Last Date: {{ job.lastDate }}</p>
-        {% assign days = "now" | date: "%s" | minus: job.date | date: "%s" | divided_by: 86400 %}
-        {% if days < 7 %}
-        <span class="blink text-red-500 font-bold">New</span>
-        {% endif %}
-        <a href="{{ job.permalink }}" class="text-blue-500">Details</a>
-        <a href="{{ job.applyLink }}" class="text-green-500 ml-2">Apply</a>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
+  <!-- Main Content -->
+  <div class="container mx-auto flex flex-col md:flex-row gap-4 my-4">
+    <!-- Left and Middle Columns -->
+    <div id="main-content" class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Jobs Column -->
+      <section id="jobs" class="bg-white p-4 rounded shadow">
+        <h2 class="text-2xl font-bold mb-2" data-lang="en">Latest Jobs</h2>
+        <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">नवीनतम जॉब्स</h2>
+        <div id="jobs-list">
+          {% for job in site.jobs %}
+          <div class="mb-4">
+            <h3 class="text-lg font-bold">{{ job.title }}</h3>
+            <p class="text-gray-600" data-lang="en">Posted: {{ job.date | date: "%b %d, %Y" }}</p>
+            <p class="text-gray-600" data-lang="hi" style="display:none;">पोस्ट किया गया: {{ job.date | date: "%d %b, %Y" }}</p>
+            <p class="text-gray-600" data-lang="en">Last Date: {{ job.lastDate }}</p>
+            <p class="text-gray-600" data-lang="hi" style="display:none;">अंतिम तिथि: {{ job.lastDate }}</p>
+            {% assign days = "now" | date: "%s" | minus: job.date | date: "%s" | divided_by: 86400 %}
+            {% if days < 7 %}
+            <span class="blink text-red-500 font-bold" data-lang="en">New</span>
+            <span class="blink text-red-500 font-bold" data-lang="hi" style="display:none;">नया</span>
+            {% endif %}
+            <a href="{{ job.permalink }}" class="text-blue-500" data-lang="en">Details</a>
+            <a href="{{ job.permalink }}" class="text-blue-500" data-lang="hi" style="display:none;">विवरण</a>
+            <a href="{{ job.applyLink }}" class="text-green-500 ml-2" data-lang="en">Apply</a>
+            <a href="{{ job.applyLink }}" class="text-green-500 ml-2" data-lang="hi" style="display:none;">आवेदन करें</a>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
 
-  <!-- Admit Cards Section -->
-  <section id="admit-cards" class="container mx-auto py-8">
-    <h2 class="text-3xl font-bold mb-4">Latest Admit Cards</h2>
-    <div id="admit-cards-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {% for card in site.admit-cards %}
-      <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">{{ card.title }}</h3>
-        <p class="text-gray-600">Posted: {{ card.date | date: "%b %d, %Y" }}</p>
-        <a href="{{ card.permalink }}" class="text-blue-500">Details</a>
-        <a href="{{ card.downloadLink }}" class="text-green-500 ml-2">Download</a>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
+      <!-- Admit Cards Column -->
+      <section id="admit-cards" class="bg-white p-4 rounded shadow">
+        <h2 class="text-2xl font-bold mb-2" data-lang="en">Latest Admit Cards</h2>
+        <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">नवीनतम एडमिट कार्ड</h2>
+        <div id="admit-cards-list">
+          {% for card in site.admit-cards %}
+          <div class="mb-4">
+            <h3 class="text-lg font-bold">{{ card.title }}</h3>
+            <p class="text-gray-600" data-lang="en">Posted: {{ card.date | date: "%b %d, %Y" }}</p>
+            <p class="text-gray-600" data-lang="hi" style="display:none;">पोस्ट किया गया: {{ card.date | date: "%d %b, %Y" }}</p>
+            <a href="{{ card.permalink }}" class="text-blue-500" data-lang="en">Details</a>
+            <a href="{{ card.permalink }}" class="text-blue-500" data-lang="hi" style="display:none;">विवरण</a>
+            <a href="{{ card.downloadLink }}" class="text-green-500 ml-2" data-lang="en">Download</a>
+            <a href="{{ card.downloadLink }}" class="text-green-500 ml-2" data-lang="hi" style="display:none;">डाउनलोड</a>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
 
-  <!-- Results Section -->
-  <section id="results" class="container mx-auto py-8">
-    <h2 class="text-3xl font-bold mb-4">Latest Results</h2>
-    <div id="results-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {% for result in site.results %}
-      <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">{{ result.title }}</h3>
-        <p class="text-gray-600">Posted: {{ result.date | date: "%b %d, %Y" }}</p>
-        <a href="{{ result.permalink }}" class="text-blue-500">Details</a>
-        <a href="{{ result.resultLink }}" class="text-green-500 ml-2">Check Result</a>
-      </div>
-      {% endfor %}
+      <!-- Results Column -->
+      <section id="results" class="bg-white p-4 rounded shadow">
+        <h2 class="text-2xl font-bold mb-2" data-lang="en">Latest Results</h2>
+        <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">नवीनतम रिजल्ट्स</h2>
+        <div id="results-list">
+          {% for result in site.results %}
+          <div class="mb-4">
+            <h3 class="text-lg font-bold">{{ result.title }}</h3>
+            <p class="text-gray-600" data-lang="en">Posted: {{ result.date | date: "%b %d, %Y" }}</p>
+            <p class="text-gray-600" data-lang="hi" style="display:none;">पोस्ट किया गया: {{ card.date | date: "%d %b, %Y" }}</p>
+            <a href="{{ result.permalink }}" class="text-blue-500" data-lang="en">Details</a>
+            <a href="{{ result.permalink }}" class="text-blue-500" data-lang="hi" style="display:none;">विवरण</a>
+            <a href="{{ result.resultLink }}" class="text-green-500 ml-2" data-lang="en">Check Result</a>
+            <a href="{{ result.resultLink }}" class="text-green-500 ml-2" data-lang="hi" style="display:none;">रिजल्ट देखें</a>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
     </div>
-  </section>
+
+    <!-- Right Sidebar -->
+    <aside class="w-full md:w-64 bg-white p-4 rounded shadow sidebar">
+      <h2 class="text-2xl font-bold mb-2" data-lang="en">Useful Links</h2>
+      <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">उपयोगी लिंक्स</h2>
+      <ul class="list-disc pl-4">
+        <li><a href="https://serviceonline.bihar.gov.in" class="text-blue-500">Service Plus Bihar</a></li>
+        <li><a href="https://uidai.gov.in" class="text-blue-500">Aadhaar Sarthi</a></li>
+        <li><a href="https://www.incometaxindia.gov.in" class="text-blue-500">Income Tax</a></li>
+        <!-- Add more links here -->
+      </ul>
+    </aside>
+  </div>
 
   <!-- Tools Section -->
-  <section id="tools" class="container mx-auto py-8">
-    <h2 class="text-3xl font-bold mb-4">Tools</h2>
+  <section id="tools" class="container mx-auto py-4">
+    <h2 class="text-2xl font-bold mb-2" data-lang="en">Tools</h2>
+    <h2 class="text-2xl font-bold mb-2" data-lang="hi" style="display:none;">टूल्स</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Image Resizer -->
       <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">Image Resizer</h3>
+        <h3 class="text-lg font-bold" data-lang="en">Image Resizer</h3>
+        <h3 class="text-lg font-bold" data-lang="hi" style="display:none;">इमेज रिसाइज़र</h3>
         <input type="file" id="image-upload" accept="image/*">
-        <input type="range" id="image-size" min="10" max="1000" value="500">
-        <p>Size: <span id="image-size-value">500px</span></p>
-        <button id="resize-image" class="bg-blue-500 text-white px-4 py-2 rounded">Resize</button>
+        <input type="range" id="image-size" min="10" max="1000" value="500" class="w-full">
+        <p data-lang="en">Size: <span id="image-size-value">500px</span></p>
+        <p data-lang="hi" style="display:none;">साइज़: <span id="image-size-value">500px</span></p>
+        <img id="image-preview" class="preview-img" style="display:none;">
+        <button id="resize-image" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="en">Resize</button>
+        <button id="resize-image" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="hi" style="display:none;">रिसाइज़ करें</button>
       </div>
+
+      <!-- PDF Resizer -->
       <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">PDF Resizer</h3>
+        <h3 class="text-lg font-bold" data-lang="en">PDF Resizer</h3>
+        <h3 class="text-lg font-bold" data-lang="hi" style="display:none;">पीडीएफ रिसाइज़र</h3>
         <input type="file" id="pdf-upload" accept=".pdf">
-        <input type="range" id="pdf-size" min="10" max="100" value="80">
-        <p>Quality: <span id="pdf-size-value">80%</span></p>
-        <button id="resize-pdf" class="bg-blue-500 text-white px-4 py-2 rounded">Resize</button>
+        <input type="range" id="pdf-size" min="10" max="100" value="80" class="w-full">
+        <p data-lang="en">Quality: <span id="pdf-size-value">80%</span></p>
+        <p data-lang="hi" style="display:none;">क्वालिटी: <span id="pdf-size-value">80%</span></p>
+        <canvas id="pdf-preview" class="preview-pdf" style="display:none;"></canvas>
+        <button id="resize-pdf" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="en">Resize</button>
+        <button id="resize-pdf" class="bg-blue-500 text-white px-4 py-2 rounded mt-2" data-lang="hi" style="display:none;">रिसाइज़ करें</button>
       </div>
+
+      <!-- Age Calculator -->
       <div class="bg-white p-4 rounded shadow">
-        <h3 class="text-xl font-bold">Age Calculator</h3>
-        <input type="date" id="dob">
-        <button id="calculate-age" class="bg-blue-500 text-white px-4 py-2 rounded">Calculate</button>
-        <p id="age-result"></p>
+        <h3 class="text-lg font-bold" data-lang="en">Age Calculator</h3>
+        <h3 class="text-lg font-bold" data-lang="hi" style="display:none;">आयु कैलकुलेटर</h3>
+        <label data-lang="en">Date of Birth:</label>
+        <label data-lang="hi" style="display:none;">जन्म तिथि:</label>
+        <input type="date" id="dob" class="w-full mb-2">
+        <label data-lang="en">Calculate as of (optional):</label>
+        <label data-lang="hi" style="display:none;">इस तिथि तक गणना (वैकल्पिक):</label>
+        <input type="date" id="calc-date" class="w-full mb-2">
+        <button id="calculate-age" class="bg-blue-500 text-white px-4 py-2 rounded" data-lang="en">Calculate</button>
+        <button id="calculate-age" class="bg-blue-500 text-white px-4 py-2 rounded" data-lang="hi" style="display:none;">गणना करें</button>
+        <p id="age-result" data-lang="en"></p>
+        <p id="age-result" data-lang="hi" style="display:none;"></p>
       </div>
     </div>
+  </section>
+
+  <!-- Newsletter Signup -->
+  <section id="newsletter" class="container mx-auto">
+    <h3 data-lang="en">Subscribe for Updates</h3>
+    <h3 data-lang="hi" style="display:none;">अपडेट्स के लिए सब्सक्राइब करें</h3>
+    <form action="YOUR_MAILCHIMP_FORM_ACTION" method="post" target="_blank">
+      <input type="email" name="EMAIL" placeholder="Enter your email" data-lang="en" required>
+      <input type="email" name="EMAIL" placeholder="अपना ईमेल डालें" data-lang="hi" style="display:none;" required>
+      <button type="submit" data-lang="en">Subscribe</button>
+      <button type="submit" data-lang="hi" style="display:none;">सब्सक्राइब करें</button>
+    </form>
   </section>
 
   <!-- Footer -->
   <footer class="gradient-bg text-white p-4 text-center">
-    <p>&copy; 2025 Jobs.SchoolHunt.in. All rights reserved.</p>
+    <p data-lang="en">© 2025 Jobs.SchoolHunt.in. All rights reserved.</p>
+    <p data-lang="hi" style="display:none;">© 2025 Jobs.SchoolHunt.in। सर्वाधिकार सुरक्षित।</p>
     <div>
       <a href="#" class="mx-2"><i class="fab fa-facebook"></i></a>
       <a href="#" class="mx-2"><i class="fab fa-twitter"></i></a>
@@ -165,6 +254,7 @@
   </footer>
 
   <!-- JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/algolia-docsearch@3/dist/docsearch.min.js"></script>
   <script>
     // Language Toggle
     document.getElementById('lang-toggle').addEventListener('change', (e) => {
@@ -177,6 +267,18 @@
     // Image Resizer
     document.getElementById('image-size').addEventListener('input', (e) => {
       document.getElementById('image-size-value').textContent = `${e.target.value}px`;
+    });
+    document.getElementById('image-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = document.getElementById('image-preview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
     });
     document.getElementById('resize-image').addEventListener('click', () => {
       const file = document.getElementById('image-upload').files[0];
@@ -201,23 +303,51 @@
       }
     });
 
-    // PDF Resizer (Placeholder)
+    // PDF Resizer
     document.getElementById('pdf-size').addEventListener('input', (e) => {
       document.getElementById('pdf-size-value').textContent = `${e.target.value}%`;
     });
+    document.getElementById('pdf-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const pdfData = new Uint8Array(e.target.result);
+          const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+          const page = await pdf.getPage(1);
+          const scale = 1;
+          const viewport = page.getViewport({ scale });
+          const canvas = document.getElementById('pdf-preview');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport }).promise;
+          canvas.style.display = 'block';
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    });
     document.getElementById('resize-pdf').addEventListener('click', () => {
-      alert('PDF resizing not implemented yet.');
+      alert('PDF resizing not fully supported in browser. Download and use a desktop tool like Adobe Acrobat.');
     });
 
     // Age Calculator
     document.getElementById('calculate-age').addEventListener('click', () => {
       const dob = new Date(document.getElementById('dob').value);
-      const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) {
+      const calcDate = document.getElementById('calc-date').value ? new Date(document.getElementById('calc-date').value) : new Date();
+      let age = calcDate.getFullYear() - dob.getFullYear();
+      if (calcDate.getMonth() < dob.getMonth() || (calcDate.getMonth() === dob.getMonth() && calcDate.getDate() < dob.getDate())) {
         age--;
       }
-      document.getElementById('age-result').textContent = `Your age is ${age} years.`;
+      document.querySelector('#age-result[data-lang="en"]').textContent = `Your age is ${age} years.`;
+      document.querySelector('#age-result[data-lang="hi"]').textContent = `आपकी आयु ${age} वर्ष है।`;
+    });
+
+    // Algolia DocSearch
+    docsearch({
+      apiKey: 'YOUR_ALGOLIA_API_KEY',
+      indexName: 'YOUR_ALGOLIA_INDEX_NAME',
+      inputSelector: '#search-input'
     });
   </script>
 </body>
