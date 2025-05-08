@@ -1,0 +1,46 @@
+---
+backend:
+  name: github
+  repo: <your-github-username>/jobs-schoolhunt
+  branch: main
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+collections:
+  - name: "jobs"
+    label: "Jobs"
+    folder: "_jobs/"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Category", name: "category", widget: "select", options: ["jobs"] }
+      - { label: "Language", name: "lang", widget: "select", options: ["en", "hi"] }
+      - { label: "Last Date", name: "lastDate", widget: "string" }
+      - { label: "Apply Link", name: "applyLink", widget: "string" }
+      - { label: "Content", name: "body", widget: "markdown" }
+  - name: "admit-cards"
+    label: "Admit Cards"
+    folder: "_admit-cards/"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Category", name: "category", widget: "select", options: ["admit-card"] }
+      - { label: "Language", name: "lang", widget: "select", options: ["en", "hi"] }
+      - { label: "Download Link", name: "downloadLink", widget: "string" }
+      - { label: "Content", name: "body", widget: "markdown" }
+  - name: "results"
+    label: "Results"
+    folder: "_results/"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Category", name: "category", widget: "select", options: ["results"] }
+      - { label: "Language", name: "lang", widget: "select", options: ["en", "hi"] }
+      - { label: "Result Link", name: "resultLink", widget: "string" }
+      - { label: "Content", name: "body", widget: "markdown" }
+---

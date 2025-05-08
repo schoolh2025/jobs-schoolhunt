@@ -1,0 +1,467 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jobs.SchoolHunt.in - Latest Government Jobs, Admit Cards, Results, and Tools in Hindi and English">
+  <meta name="keywords" content="government jobs, sarkari result, employment news, hindi jobs, english jobs">
+  <title>Jobs.SchoolHunt.in - Latest Government Jobs</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="alternate" type="application/rss+xml" href="/feed.xml" title="Jobs Feed">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .hindi {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+    }
+    .nav-gradient {
+      background: linear-gradient(90deg, #3b82f6, #f97316, #8b5cf6, #10b981);
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .card {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #3b82f6, #f97316);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 999px;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #2563eb, #ea580c);
+      transform: scale(1.1);
+    }
+    .new-tag {
+      animation: blink 1s infinite;
+      background: #f97316;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background: linear-gradient(90deg, #3b82f6, #f97316);
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background: linear-gradient(90deg, #10b981, #8b5cf6);
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .input-field {
+      transition: all 0.3s;
+    }
+    .input-field:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-blue-50 to-green-50">
+  <!-- Navbar -->
+  <nav class="nav-gradient text-white p-4 sticky top-0 z-10 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="/" class="text-2xl font-bold flex items-center">
+        <i class="fas fa-briefcase mr-2"></i> Jobs.SchoolHunt.in
+      </a>
+      <div class="flex items-center space-x-4">
+        <a href="/jobs" class="hover:text-orange-200"><i class="fas fa-search mr-1"></i> Jobs</a>
+        <a href="/admit-card" class="hover:text-orange-200"><i class="fas fa-ticket-alt mr-1"></i> Admit Card</a>
+        <a href="/results" class="hover:text-orange-200"><i class="fas fa-clipboard-check mr-1"></i> Results</a>
+        <a href="/tools" class="hover:text-orange-200"><i class="fas fa-tools mr-1"></i> Tools</a>
+        <a href="/blog" class="hover:text-orange-200"><i class="fas fa-blog mr-1"></i> Blog</a>
+        <a href="/admin" class="hover:text-orange-200"><i class="fas fa-user-cog mr-1"></i> Admin</a>
+        <label class="toggle-switch">
+          <input type="checkbox" id="language-toggle">
+          <span class="slider"></span>
+        </label>
+        <span id="lang-label" class="text-sm font-bold">EN</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-r from-blue-100 via-purple-100 to-green-100 py-16 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-orange-600 mb-4">Latest Government Jobs 2025</h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Explore Sarkari Naukri, Admit Cards, Results, and Tools in Hindi & English.</p>
+    <a href="/jobs" class="btn-primary mt-6 inline-block"><i class="fas fa-arrow-right mr-2"></i> Explore Jobs</a>
+  </section>
+
+  <!-- Jobs Section -->
+  <section class="container mx-auto p-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-briefcase mr-2 text-blue-600"></i> Latest Jobs</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="jobs-list">
+      <!-- Jobs will be populated dynamically via JavaScript -->
+    </div>
+  </section>
+
+  <!-- Admit Cards Section -->
+  <section class="container mx-auto p-8 bg-gray-50">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-ticketlestick-alt mr-2 text-blue-600"></i> Latest Admit Cards</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="admit-cards-list">
+      <!-- Admit Cards will be populated dynamically via JavaScript -->
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section class="container mx-auto p-8">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-clipboard-check mr-2 text-blue-600"></i> Latest Results</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="results-list">
+      <!-- Results will be populated dynamically via JavaScript -->
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="container mx-auto p-8 bg-gradient-to-b from-green-100 to-blue-100">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center"><i class="fas fa-tools mr-2 text-blue-600"></i> Useful Tools</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Image Resizer -->
+      <div class="bg-white p-6 rounded-lg shadow-lg card">
+        <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-image mr-2"></i> Image Resizer</h3>
+        <input type="file" id="imageInput" accept="image/*" class="my-2 block w-full border rounded p-2 input-field">
+        <label class="text-gray-600">Resize Percentage:</label>
+        <input type="range" id="imageSize" min="10" max="200" value="100" class="w-full my-2 accent-blue-600">
+        <span id="imageSizeValue" class="text-gray-600 font-semibold">100%</span>
+        <label class="text-gray-600">Quality:</label>
+        <select id="imageQuality" class="w-full my-2 border rounded p-2 input-field">
+          <option value="1">High (100%)</option>
+          <option value="0.75">Medium (75%)</option>
+          <option value="0.5">Low (50%)</option>
+        </select>
+        <p id="imageSizePreview" class="text-gray-600 my-2 font-semibold">Estimated Size: Calculating...</p>
+        <button id="resizeImage" class="btn-primary mt-2"><i class="fas fa-compress-alt mr-2"></i> Resize Image</button>
+        <canvas id="imageCanvas" class="my-2 w-full border rounded hidden"></canvas>
+        <a id="downloadImage" class="text-blue-600 hidden"><i class="fas fa-download mr-2"></i> Download Resized Image</a>
+      </div>
+      <!-- PDF Resizer -->
+      <div class="bg-white p-6 rounded-lg shadow-lg card">
+        <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-file-pdf mr-2"></i> PDF Resizer</h3>
+        <input type="file" id="pdfInput" accept=".pdf" class="my-2 block w-full border rounded p-2 input-field">
+        <label class="text-gray-600">Resize Percentage:</label>
+        <input type="range" id="pdfSize" min="10" max="200" value="100" class="w-full my-2 accent-blue-600">
+        <span id="pdfSizeValue" class="text-gray-600 font-semibold">100%</span>
+        <label class="text-gray-600">Compression Level:</label>
+        <select id="pdfCompression" class="w-full my-2 border rounded p-2 input-field">
+          <option value="high">High Compression (50%)</option>
+          <option value="medium">Medium Compression (75%)</option>
+          <option value="low">Low Compression (100%)</option>
+        </select>
+        <p id="pdfSizePreview" class="text-gray-600 my-2 font-semibold">Estimated Size: Calculating...</p>
+        <button id="compressPDF" class="btn-primary mt-2"><i class="fas fa-compress-alt mr-2"></i> Compress PDF</button>
+        <a id="downloadPDF" class="text-blue-600 hidden"><i class="fas fa-download mr-2"></i> Download Compressed PDF</a>
+      </div>
+      <!-- Age Calculator -->
+      <div class="bg-white p-6 rounded-lg shadow-lg card">
+        <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-calculator mr-2"></i> Age Calculator</h3>
+        <label class="text-gray-600">Birth Date:</label>
+        <input type="date" id="birthDate" class="my-2 w-full border rounded p-2 input-field">
+        <label class="text-gray-600">Specific Date (Optional):</label>
+        <input type="date" id="specificDate" class="my-2 w-full border rounded p-2 input-field">
+        <button id="calculateAge" class="btn-primary mt-2"><i class="fas fa-calendar-check mr-2"></i> Calculate Age</button>
+        <p id="ageResult" class="my-2 text-gray-600 font-semibold"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="nav-gradient text-white p-8 text-center">
+    <p class="text-lg font-bold">© 2025 Jobs.SchoolHunt.in. All Rights Reserved.</p>
+    <div class="mt-4 flex justify-center space-x-6">
+      <a href="#" class="text-orange-200 hover:text-white"><i class="fab fa-facebook-f text-2xl"></i></a>
+      <a href="#" class="text-orange-200 hover:text-white"><i class="fab fa-twitter text-2xl"></i></a>
+      <a href="#" class="text-orange-200 hover:text-white"><i class="fab fa-instagram text-2xl"></i></a>
+      <a href="#" class="text-orange-200 hover:text-white"><i class="fab fa-linkedin-in text-2xl"></i></a>
+    </div>
+    <div class="mt-4">
+      <a href="/about" class="text-orange-200 mx-2 hover:text-white">About</a>
+      <a href="/contact" class="text-orange-200 mx-2 hover:text-white">Contact</a>
+      <a href="/privacy" class="text-orange-200 mx-2 hover:text-white">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <!-- JavaScript for Tools and Dynamic Content -->
+  <script>
+    // Language Toggle
+    const languageToggle = document.getElementById('language-toggle');
+    const langLabel = document.getElementById('lang-label');
+    languageToggle.addEventListener('change', function() {
+      const lang = this.checked ? 'hi' : 'en';
+      langLabel.textContent = lang === 'hi' ? 'HI' : 'EN';
+      window.location.href = lang === 'hi' ? '/hi/' : '/';
+    });
+
+    // Fetch and Display Jobs, Admit Cards, Results
+    async function loadContent() {
+      // Sample data (replace with fetch from your data source or Jekyll collections)
+      const jobs = [
+        { title: "SSC CGL 2025", date: "2025-05-08", category: "jobs", slug: "ssc-cgl-2025", lastDate: "June 30, 2025" },
+        // Add more via CMS or Markdown
+      ];
+      const admitCards = [
+        { title: "UPSC 2025 Admit Card", date: "2025-05-07", category: "admit-card", slug: "upsc-2025-admit-card" },
+      ];
+      const results = [
+        { title: "SSC CHSL 2024 Result", date: "2025-05-06", category: "results", slug: "ssc-chsl-2024-result" },
+      ];
+
+      // Sort by date (newest first)
+      const sortByDate = (a, b) => new Date(b.date) - new Date(a.date);
+      jobs.sort(sortByDate);
+      admitCards.sort(sortByDate);
+      results.sort(sortByDate);
+
+      // Render Jobs
+      const jobsList = document.getElementById('jobs-list');
+      jobs.forEach(item => {
+        const isNew = (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7;
+        jobsList.innerHTML += `
+          <div class="bg-white p-6 rounded-lg shadow-lg card">
+            <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-briefcase mr-2"></i> ${item.title} ${isNew ? '<span class="new-tag">New</span>' : ''}</h3>
+            <p class="text-gray-600">Last Date: ${item.lastDate || 'N/A'}</p>
+            <a href="/${item.category}/${item.slug}" class="btn-primary mt-4 inline-block">View Details</a>
+          </div>
+        `;
+      });
+
+      // Render Admit Cards
+      const admitCardsList = document.getElementById('admit-cards-list');
+      admitCards.forEach(item => {
+        const isNew = (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7;
+        admitCardsList.innerHTML += `
+          <div class="bg-white p-6 rounded-lg shadow-lg card">
+            <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-ticket-alt mr-2"></i> ${item.title} ${isNew ? '<span class="new-tag">New</span>' : ''}</h3>
+            <p class="text-gray-600">Posted: ${item.date}</p>
+            <a href="/${item.category}/${item.slug}" class="btn-primary mt-4 inline-block">View Details</a>
+          </div>
+        `;
+      });
+
+      // Render Results
+      const resultsList = document.getElementById('results-list');
+      results.forEach(item => {
+        const isNew = (new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24) < 7;
+        resultsList.innerHTML += `
+          <div class="bg-white p-6 rounded-lg shadow-lg card">
+            <h3 class="text-xl font-semibold text-blue-600"><i class="fas fa-clipboard-check mr-2"></i> ${item.title} ${isNew ? '<span class="new-tag">New</span>' : ''}</h3>
+            <p class="text-gray-600">Posted: ${item.date}</p>
+            <a href="/${item.category}/${item.slug}" class="btn-primary mt-4 inline-block">View Details</a>
+          </div>
+        `;
+      });
+    }
+
+    // Load content on page load
+    loadContent();
+
+    // Image Resizer
+    const imageInput = document.getElementById('imageInput');
+    const imageSize = document.getElementById('imageSize');
+    const imageSizeValue = document.getElementById('imageSizeValue');
+    const imageQuality = document.getElementById('imageQuality');
+    const resizeImage = document.getElementById('resizeImage');
+    const imageCanvas = document.getElementById('imageCanvas');
+    const downloadImage = document.getElementById('downloadImage');
+    const imageSizePreview = document.getElementById('imageSizePreview');
+    let originalImageSize = 0;
+
+    imageSize.addEventListener('input', function() {
+      imageSizeValue.textContent = `${this.value}%`;
+      updateImageSizePreview();
+    });
+
+    imageQuality.addEventListener('change', updateImageSizePreview);
+
+    function updateImageSizePreview() {
+      const scale = imageSize.value / 100;
+      const quality = parseFloat(imageQuality.value);
+      const estimatedSize = (originalImageSize * scale * scale * quality / 1024).toFixed(2);
+      imageSizePreview.textContent = `Estimated Size: ${estimatedSize} MB`;
+    }
+
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      originalImageSize = file.size; // Bytes
+      updateImageSizePreview();
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = function() {
+        imageCanvas.width = img.width;
+        imageCanvas.height = img.height;
+        imageCanvas.getContext('2d').drawImage(img, 0, 0);
+        imageCanvas.classList.remove('hidden');
+      };
+    });
+
+    resizeImage.addEventListener('click', function() {
+      const scale = imageSize.value / 100;
+      const quality = parseFloat(imageQuality.value);
+      const newWidth = imageCanvas.width * scale;
+      const newHeight = imageCanvas.height * scale;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = newWidth;
+      tempCanvas.height = newHeight;
+      tempCanvas.getContext('2d').drawImage(imageCanvas, 0, 0, newWidth, newHeight);
+      imageCanvas.width = newWidth;
+      imageCanvas.height = newHeight;
+      imageCanvas.getContext('2d').drawImage(tempCanvas, 0, 0);
+      downloadImage.href = imageCanvas.toDataURL('image/jpeg', quality);
+      downloadImage.classList.remove('hidden');
+    });
+
+    // PDF Resizer
+    const pdfInput = document.getElementById('pdfInput');
+    const pdfSize = document.getElementById('pdfSize');
+    const pdfSizeValue = document.getElementById('pdfSizeValue');
+    const pdfCompression = document.getElementById('pdfCompression');
+    const compressPDF = document.getElementById('compressPDF');
+    const downloadPDF = document.getElementById('downloadPDF');
+    const pdfSizePreview = document.getElementById('pdfSizePreview');
+    let originalPDFSize = 0;
+
+    pdfSize.addEventListener('input', function() {
+      pdfSizeValue.textContent = `${this.value}%`;
+      updatePDFSizePreview();
+    });
+
+    pdfCompression.addEventListener('change', updatePDFSizePreview);
+
+    function updatePDFSizePreview() {
+      const scale = pdfSize.value / 100;
+      const compression = pdfCompression.value === 'high' ? 0.5 : pdfCompression.value === 'medium' ? 0.75 : 1;
+      const estimatedSize = (originalPDFSize * scale * compression / 1024).toFixed(2);
+      pdfSizePreview.textContent = `Estimated Size: ${estimatedSize} MB`;
+    }
+
+    pdfInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      originalPDFSize = file.size; // Bytes
+      updatePDFSizePreview();
+    });
+
+    compressPDF.addEventListener('click', function() {
+      const file = pdfInput.files[0];
+      if (file) {
+        const compressionLevel = pdfCompression.value;
+        alert(`Simulating ${compressionLevel} compression. Actual compression requires server-side processing.`);
+        downloadPDF.href = URL.createObjectURL(file);
+        downloadPDF.classList.remove('hidden');
+      }
+    });
+
+    // Age Calculator
+    const birthDate = document.getElementById('birthDate');
+    const specificDate = document.getElementById('specificDate');
+    const calculateAge = document.getElementById('calculateAge');
+    const ageResult = document.getElementById('ageResult');
+
+    calculateAge.addEventListener('click', function() {
+      const birth = new Date(birthDate.value);
+      const compareDate = specificDate.value ? new Date(specificDate.value) : new Date();
+      let years = compareDate.getFullYear() - birth.getFullYear();
+      let months = compareDate.getMonth() - birth.getMonth();
+      let days = compareDate.getDate() - birth.getDate();
+
+      if (days < 0) {
+        months--;
+        days += new Date(compareDate.getFullYear(), compareDate.getMonth(), 0).getDate();
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      const lang = languageToggle.checked ? 'hi' : 'en';
+      if (lang === 'hi') {
+        ageResult.textContent = `आयु: ${years} वर्ष, ${months} महीने, ${days} दिन`;
+      } else {
+        ageResult.textContent = `Age: ${years} years, ${months} months, ${days} days`;
+      }
+    });
+  </script>
