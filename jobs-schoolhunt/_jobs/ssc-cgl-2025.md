@@ -1,1 +1,20 @@
 
+title: Jobs.SchoolHunt.in
+description: Latest Government Jobs, Admit Cards, Results, and Tools in Hindi and English
+url: "https://jobs.schoolhunt.in"
+lang: en
+theme: jekyll-chirpy
+collections:
+  jobs:
+    output: true
+    permalink: /jobs/:title/
+  admit-cards:
+    output: true
+    permalink: /admit-card/:title/
+  results:
+    output: true
+    permalink: /results/:title/
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
